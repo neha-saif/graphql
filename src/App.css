@@ -16,6 +16,10 @@ main.card {
   flex-direction: column;
   justify-content: center;
 }
+main.card input {
+  width: 80%;        
+  align-self: center; 
+}
 
 .logo {
   height: 6em;
