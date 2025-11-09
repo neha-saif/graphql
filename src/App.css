@@ -5,16 +5,18 @@
   text-align: center;
 }
 main.card {
+  margin: auto;
+  padding: 2rem 2.5rem; 
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 420px;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
   justify-content: center;
-  margin: 0 auto;
-  min-height: 100vh;
-  max-width: 400px;
-  padding: 2rem; 
-  box-sizing: border-box;
 }
+
 
 .logo {
   height: 6em;
