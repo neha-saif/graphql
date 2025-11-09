@@ -47,10 +47,8 @@ export default function Login() {
     textAlign: "center",
   }}
 >
-  <h1 style={{ color: "#6d28d9", marginBottom: "0.5rem" }}>Sign In</h1>
-  <p style={{ fontSize: 14, marginBottom: 24 }}>
-    Use <strong>username</strong> or <strong>email</strong> to login
-  </p>
+  <h1 style={{ color: "#6d28d9", marginBottom: "0.5rem" }}>Sign In </h1>
+<br></br>
 
   <form onSubmit={onSubmit} noValidate>
     <label htmlFor="identity" style={{ display: "block", textAlign: "left" }}>
