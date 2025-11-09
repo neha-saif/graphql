@@ -6,7 +6,7 @@
 }
 main.card {
   margin: auto;
-  padding: 2rem 2.5rem; 
+  padding: 2.5rem; 
   border-radius: 12px;
   background: #fff;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
@@ -16,7 +16,6 @@ main.card {
   flex-direction: column;
   justify-content: center;
 }
-
 
 .logo {
   height: 6em;
