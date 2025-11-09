@@ -16,10 +16,18 @@ main.card {
   flex-direction: column;
   justify-content: center;
 }
-main.card input {
-  width: 50%;        
-  align-self: center; 
+main.card form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;  
 }
+
+main.card input {
+  width: 75% !important; /* force narrower width */
+  max-width: 300px;   
+  margin: 0.25rem 0;   
+}
+
 
 .logo {
   height: 6em;
