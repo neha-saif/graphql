@@ -32,7 +32,6 @@ export function decodeJwtPayload(token) {
   }
 }
 
-/** Save token and cache decoded payload for quick reads */
 export function saveToken(token) {
   setToken(token);
   const payload = decodeJwtPayload(token);
@@ -41,12 +40,8 @@ export function saveToken(token) {
   }
 }
 
-/**
- * Sign in with Basic auth (username/email + password) to obtain a JWT.
- * - Reads URL from .env (VITE_AUTH_ENDPOINT)
- * - Accepts JSON responses with { token | jwt | access_token }, or raw string
- * - Persists token via saveToken()
- */
+// Sign in with Basic auth to obtain a JWT.
+// Reads URL from .env (VITE_AUTH_ENDPOINT)
 export async function signIn(identity, password) {
   if (!AUTH_ENDPOINT) {
     throw new Error("VITE_AUTH_ENDPOINT is not set in your .env");

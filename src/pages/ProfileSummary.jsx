@@ -1,22 +1,11 @@
 import React from "react";
 import "../App.css";
 
-/**
- * Uses user.totalUp as the canonical XP for level.
- * Falls back to summed transactions if xpBase isn't available.
- *
- * Props:
- *   user: { id, login }
- *   xpBase: number    // from user.totalUp (preferred)
- *   xpFallback: number // sum of xpRows (fallback only)
- */
 export default function ProfileSummary({ user, xpBase, xpFallback, auditRatio, xpUp, xpDown }) {
   if (!user) return null;
 
-  // Prefer user.totalUp; fallback to summed transactions.
   const sourceXP = Number.isFinite(xpBase) && xpBase > 0 ? xpBase : (Number(xpFallback) || 0);
 
-  // Tune per your platform. 40k per level gives you ~26 at totalUp ≈ 1,043,646.
   const XP_PER_LEVEL = Number(import.meta.env.VITE_XP_PER_LEVEL ?? 40000);
 
   const level = Math.floor(sourceXP / XP_PER_LEVEL);

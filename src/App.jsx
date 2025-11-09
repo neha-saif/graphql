@@ -8,8 +8,6 @@ function PrivateRoute({ children }) {
 }
 //routes all paths to respective pages
 
-//what does this private route stuff et mean? amd the replace parts ?? !!
-
 export default function App() {
   return (
     <Routes>
