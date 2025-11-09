@@ -19,14 +19,15 @@ main.card {
 main.card form {
   display: flex;
   flex-direction: column;
-  align-items: center;  
+  align-items: center;   /* centers inputs horizontally */
 }
 
 main.card input {
   width: 75% !important; /* force narrower width */
-  max-width: 300px;   
-  margin: 0.25rem 0;   
+  max-width: 300px;      /* optional: limit absolute size */
+  margin: 0.25rem 0;     /* small spacing */
 }
+
 
 
 .logo {
