@@ -16,20 +16,66 @@ import {
   PieChart,
   Pie,
   Cell,
+  BarChart,
+  Bar,
 } from "recharts";
 
-// ui helpers 
+// 🌑 Unified Dark Neon Purple Palette
+export const COLOR_PALETTE = {
+  // purples
+  purpleDarker: "#2e1065",
+  purpleDark: "#4c1d95",
+  purple: "#a855f7",       // main neon
+  purpleMid: "#7c3aed",
+  purpleLight: "#c084fc",
+  purpleSoft: "#e9d5ff",
+
+  // neutrals for dark UI
+  bg: "#020617",
+  cardBg: "#020617",
+  cardBorder: "#1f2937",
+  textMain: "#e5e7eb",
+  textMuted: "#9ca3af",
+
+  // muted language colors (if you use them elsewhere)
+  gray: "#64748b",
+  grayLight: "#cbd5e1",
+  grayDark: "#475569",
+  go: "#8fb8ff",
+  javascript: "#ffe9a5",
+  sql: "#b4f5cc",
+  python: "#bcd7ff",
+  docker: "#9ed0ff",
+  shell: "#f7b3d6",
+  other: "#cbd5e1",
+};
+
+// Distinct but cohesive chart colors (purples / pink / indigo)
 const LINE_COLORS = [
-  "#7aa2ff",
-  "#4caf50",
-  "#f44336",
-  "#ff9800",
-  "#9c27b0",
-  "#00bcd4",
-  "#8bc34a",
-  "#795548",
+  "#a855f7", // neon purple
+  "#7c3aed", // indigo-purple
+  "#c084fc", // light purple
+  "#e879f9", // bright pinkish purple
+  "#f472b6", // pink
+  "#6366f1", // indigo
+  "#4c1d95", // deep purple
+  "#e9d5ff", // pale lavender
 ];
 
+// language → color mapping (kept as-is but using palette)
+export function colorForLang(lang) {
+  if (!lang) return COLOR_PALETTE.other;
+  const key = lang.toLowerCase().trim();
+
+  if (key.includes("go")) return COLOR_PALETTE.go;
+  if (key.includes("javascript") || key.includes("js")) return COLOR_PALETTE.javascript;
+  if (key.includes("sql")) return COLOR_PALETTE.sql;
+  if (key.includes("python") || key.includes("py")) return COLOR_PALETTE.python;
+  if (key.includes("docker")) return COLOR_PALETTE.docker;
+  if (key.includes("shell") || key.includes("sh") || key.includes("bash")) return COLOR_PALETTE.shell;
+
+  return COLOR_PALETTE.other;
+}
 
 function Chip({ active, children, onClick, title }) {
   return (
@@ -40,10 +86,11 @@ function Chip({ active, children, onClick, title }) {
       style={{
         padding: "6px 10px",
         borderRadius: 12,
-        border: "1px solid rgba(255,255,255,0.15)",
-        background: active ? "rgba(122,162,255,0.18)" : "transparent",
-        color: "inherit",
+        border: `1px solid rgba(148, 163, 184, 0.4)`,
+        background: active ? "rgba(168, 85, 247, 0.18)" : "transparent",
+        color: COLOR_PALETTE.textMain,
         cursor: "pointer",
+        fontSize: 12,
       }}
     >
       {children}
@@ -52,9 +99,7 @@ function Chip({ active, children, onClick, title }) {
 }
 
 // ui clean up rules to fix names from db
-
 const PASS_THRESHOLD = Number(import.meta.env.VITE_PASS_THRESHOLD ?? 1);
-
 
 function prettyLang(s) {
   if (!s) return "Other";
@@ -99,54 +144,67 @@ function statusFromRow(row, threshold = PASS_THRESHOLD) {
   return Number(effective) >= threshold ? "Passed" : "Failed";
 }
 
+/* =============== Quests Section (Pie) =============== */
 
-// Quests pie chart 
 function QuestsSection({ baseRows }) {
-  // only passed quests count toward the distribution
   const passed = useMemo(
     () => baseRows.filter((r) => r.__status === "Passed"),
     [baseRows]
   );
 
   const pieData = useMemo(() => {
-    const map = new Map(); // language count
+    const map = new Map();
     for (const r of passed) {
       const lang = r.__lang || "Other";
       map.set(lang, (map.get(lang) || 0) + 1);
     }
-    const entries = Array.from(map.entries())
+    return Array.from(map.entries())
       .sort((a, b) => b[1] - a[1])
       .map(([name, value]) => ({ name, value }));
-    return entries;
   }, [passed]);
 
-  const solvedList = useMemo(
-    () =>
-      passed
-        .slice()
-        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-        .map((p) => ({
-          id: p.id,
-          name: p.object?.name || "(unnamed quest)",
-          lang: p.__lang || "Other",
-          at: p.createdAt,
-        })),
-    [passed]
-  );
-
   return (
-    <section className="card" style={{ padding: 12, marginBottom: 16 }}>
-      <h3 style={{ margin: 0 }}>Overall Quests Passed </h3>
+    <section
+      className="card"
+      style={{
+        padding: 12,
+        marginBottom: 16,
+        background: COLOR_PALETTE.cardBg,
+        border: `1px solid ${COLOR_PALETTE.cardBorder}`,
+        color: COLOR_PALETTE.textMain,
+        borderRadius: 12,
+      }}
+    >
+      <h3 style={{ margin: 0, color: COLOR_PALETTE.purpleLight }}>Overall Quests Passed</h3>
 
-      <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 16, marginTop: 12 }}>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr",
+          gap: 16,
+          marginTop: 16,
+        }}
+      >
         <div style={{ height: 340 }}>
           {pieData.length === 0 ? (
-            <div style={{ padding: 12 }}>No passed quests (yet).</div>
+            <div style={{ padding: 12, color: COLOR_PALETTE.textMuted }}>
+              No passed quests yet.
+            </div>
           ) : (
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
-                <Tooltip />
-                <Legend />
+             <Tooltip
+  contentStyle={{
+    backgroundColor: COLOR_PALETTE.cardBg,
+    color: COLOR_PALETTE.textMain,
+    borderColor: COLOR_PALETTE.cardBorder,
+    borderRadius: 8,
+  }}
+  labelStyle={{ color: COLOR_PALETTE.textMain }}
+  itemStyle={{ color: COLOR_PALETTE.textMain }}
+/>
+
+                <Legend wrapperStyle={{ color: COLOR_PALETTE.textMuted }} />
                 <Pie
                   data={pieData}
                   dataKey="value"
@@ -164,30 +222,13 @@ function QuestsSection({ baseRows }) {
             </ResponsiveContainer>
           )}
         </div>
-
-        <div>
-          <h4 style={{ margin: "6px 0" }}>Solved Quests</h4>
-          {solvedList.length === 0 ? (
-            <div>No solved quests (yet).</div>
-          ) : (
-            <ul style={{ margin: 0, paddingLeft: 18, maxHeight: 320, overflow: "auto" }}>
-              {solvedList.map((q) => (
-                <li key={q.id} style={{ marginBottom: 4 }}>
-                  <code>{q.name}</code> — {q.lang}{" "}
-                  <span style={{ opacity: 0.6 }}>
-                    ({new Date(q.at).toLocaleString()})
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
       </div>
     </section>
   );
 }
 
-// projects section line chart 
+/* ============ Projects Section (Line + List) ============ */
+
 function ProjectsSection({ baseRows }) {
   const passed = useMemo(
     () => baseRows.filter((r) => r.__status === "Passed"),
@@ -215,8 +256,8 @@ function ProjectsSection({ baseRows }) {
   }
 
   const { byLangCum, overallCum, allDays } = useMemo(() => {
-    const byLangDay = new Map(); // lang -> day -> count
-    const dayAll = new Map(); // day -> count
+    const byLangDay = new Map();
+    const dayAll = new Map();
 
     for (const r of passed) {
       const lang = r.__lang || "Other";
@@ -234,8 +275,7 @@ function ProjectsSection({ baseRows }) {
       ])
     ).sort();
 
-    // cumulative per language
-    const byLangCumMap = new Map(); // lang -> day -> cum
+    const byLangCumMap = new Map();
     for (const [lang, m] of byLangDay.entries()) {
       let cum = 0;
       const cm = new Map();
@@ -247,7 +287,6 @@ function ProjectsSection({ baseRows }) {
       byLangCumMap.set(lang, cm);
     }
 
-    // overall cumulative
     let cumAll = 0;
     const overall = new Map();
     for (const d of days) {
@@ -287,11 +326,33 @@ function ProjectsSection({ baseRows }) {
   }, [passed, selected]);
 
   return (
-    <section className="card" style={{ padding: 12, marginBottom: 16 }}>
-      <h3 style={{ margin: 0 }}>Projects — Cumulative Completions Over Time</h3>
+    <section
+      className="card"
+      style={{
+        padding: 12,
+        marginBottom: 16,
+        background: COLOR_PALETTE.cardBg,
+        border: `1px solid ${COLOR_PALETTE.cardBorder}`,
+        color: COLOR_PALETTE.textMain,
+        borderRadius: 12,
+      }}
+    >
+      <h3 style={{ margin: 0, color: COLOR_PALETTE.purpleLight }}>
+        Projects — Cumulative Completions Over Time
+      </h3>
 
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center", marginTop: 8 }}>
-        <Chip active={showOverall} onClick={() => toggle("Overall")}>Overall</Chip>
+      <div
+        style={{
+          display: "flex",
+          gap: 8,
+          flexWrap: "wrap",
+          alignItems: "center",
+          marginTop: 8,
+        }}
+      >
+        <Chip active={showOverall} onClick={() => toggle("Overall")}>
+          Overall
+        </Chip>
         {languages.map((l) => (
           <Chip key={l} active={selected.includes(l)} onClick={() => toggle(l)}>
             {l}
@@ -299,22 +360,51 @@ function ProjectsSection({ baseRows }) {
         ))}
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 16, marginTop: 12 }}>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "2fr 1fr",
+          gap: 16,
+          marginTop: 12,
+        }}
+      >
         <div style={{ height: 340 }}>
           {chartData.length === 0 ? (
-            <div style={{ padding: 12 }}>No data to plot.</div>
+            <div style={{ padding: 12, color: COLOR_PALETTE.textMuted }}>
+              No data to plot.
+            </div>
           ) : (
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData}>
-                <XAxis dataKey="date" />
-                <YAxis allowDecimals={false} />
-                <Tooltip />
-                <Legend />
+           <XAxis
+  dataKey="date"
+  stroke={COLOR_PALETTE.textMain}
+  tick={{ fill: COLOR_PALETTE.textMain, fontSize: 12 }}
+/>
+
+<YAxis
+  allowDecimals={false}
+  stroke={COLOR_PALETTE.textMain}
+  tick={{ fill: COLOR_PALETTE.textMain, fontSize: 12 }}
+/>
+
+              <Tooltip
+  contentStyle={{
+    backgroundColor: COLOR_PALETTE.cardBg,
+    color: COLOR_PALETTE.textMain,
+    borderColor: COLOR_PALETTE.cardBorder,
+    borderRadius: 8,
+  }}
+  labelStyle={{ color: COLOR_PALETTE.textMain }}
+  itemStyle={{ color: COLOR_PALETTE.textMain }}
+/>
+
+                <Legend wrapperStyle={{ color: COLOR_PALETTE.textMuted }} />
                 {showOverall && (
                   <Line
                     type="monotone"
                     dataKey="All Projects"
-                    stroke="#6d28d9"
+                    stroke={COLOR_PALETTE.purple}
                     strokeWidth={3}
                     dot={false}
                     legendType="plainline"
@@ -337,11 +427,23 @@ function ProjectsSection({ baseRows }) {
         </div>
 
         <div>
-          <h4 style={{ margin: "6px 0" }}>Solved Projects</h4>
+          <h4 style={{ margin: "6px 0", color: COLOR_PALETTE.purpleSoft }}>
+            Solved Projects
+          </h4>
           {solvedFiltered.length === 0 ? (
-            <div>No solved projects (yet).</div>
+            <div style={{ color: COLOR_PALETTE.textMuted }}>
+              No solved projects (yet).
+            </div>
           ) : (
-            <ul style={{ margin: 0, paddingLeft: 18, maxHeight: 320, overflow: "auto" }}>
+            <ul
+              style={{
+                margin: 0,
+                paddingLeft: 18,
+                maxHeight: 320,
+                overflow: "auto",
+                fontSize: 13,
+              }}
+            >
               {solvedFiltered.map((p) => (
                 <li key={p.id} style={{ marginBottom: 4 }}>
                   <code>{p.name}</code> — {p.lang}{" "}
@@ -358,12 +460,12 @@ function ProjectsSection({ baseRows }) {
   );
 }
 
-// skills xp line chart
+/* ============ Skills Section (XP Line + List) ============ */
+
 function SkillsSection({ xpRows }) {
-  // per-day XP totals (by language + overall), then cumulative
   const { byLangDay, dayAll } = useMemo(() => {
-    const byLang = new Map(); // lang -> day -> sum XP
-    const overall = new Map(); // day -> sum XP
+    const byLang = new Map();
+    const overall = new Map();
     for (const t of xpRows) {
       const day = new Date(t.createdAt).toISOString().slice(0, 10);
       const lang = t.langPretty || "Other";
@@ -376,9 +478,11 @@ function SkillsSection({ xpRows }) {
     return { byLangDay: byLang, dayAll: overall };
   }, [xpRows]);
 
-  const languages = useMemo(() => Array.from(byLangDay.keys()).sort(), [byLangDay]);
+  const languages = useMemo(
+    () => Array.from(byLangDay.keys()).sort(),
+    [byLangDay]
+  );
 
-  // unified chip selector with "Overall"
   const [selected, setSelected] = useState(["Overall"]);
   const showOverall = selected.includes("Overall");
 
@@ -402,8 +506,7 @@ function SkillsSection({ xpRows }) {
   }, [byLangDay, dayAll]);
 
   const cumTable = useMemo(() => {
-    // precompute cumulative per language
-    const cumByLang = new Map(); // lang -> day -> cum
+    const cumByLang = new Map();
     for (const [lang, m] of byLangDay.entries()) {
       let cum = 0;
       const cm = new Map();
@@ -414,7 +517,6 @@ function SkillsSection({ xpRows }) {
       cumByLang.set(lang, cm);
     }
 
-    // overall cumulative
     let cumAll = 0;
     const overallMap = new Map();
     for (const d of allDays) {
@@ -434,11 +536,12 @@ function SkillsSection({ xpRows }) {
     return rows;
   }, [allDays, byLangDay, dayAll, languages, selected, showOverall]);
 
-  // XP sources list mirrors selection (if you select languages, list only those; Overall only = everything)
   const xpList = useMemo(() => {
     const langs = selected.filter((s) => s !== "Overall");
     return xpRows
-      .filter((t) => (langs.length ? langs.includes(t.langPretty || "Other") : true))
+      .filter((t) =>
+        langs.length ? langs.includes(t.langPretty || "Other") : true
+      )
       .map((t, i) => ({
         key: `${t.createdAt}-${i}`,
         amount: Number(t.amount) || 0,
@@ -451,76 +554,487 @@ function SkillsSection({ xpRows }) {
   }, [xpRows, selected]);
 
   return (
-    <section className="card" style={{ padding: 12, marginBottom: 16 }}>
-      <h3 style={{ margin: 0 }}>Skills Progression (Cumulative XP Over Time)</h3>
+    <section
+      className="card"
+      style={{
+        padding: 12,
+        marginBottom: 16,
+        background: COLOR_PALETTE.cardBg,
+        border: `1px solid ${COLOR_PALETTE.cardBorder}`,
+        color: COLOR_PALETTE.textMain,
+        borderRadius: 12,
+      }}
+    >
+      <h3 style={{ margin: 0, color: COLOR_PALETTE.purpleLight }}>
+        Skills Progression (Cumulative XP Over Time)
+      </h3>
 
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center", marginTop: 8 }}>
-        <Chip active={showOverall} onClick={() => toggle("Overall")}>Overall</Chip>
+      <div
+        style={{
+          display: "flex",
+          gap: 8,
+          flexWrap: "wrap",
+          alignItems: "center",
+          marginTop: 8,
+        }}
+      >
+        <Chip active={showOverall} onClick={() => toggle("Overall")}>
+          Overall
+        </Chip>
         {languages.map((l) => (
-          <Chip key={l} active={selected.includes(l)} onClick={() => toggle(l)}>
+          <Chip
+            key={l}
+            active={selected.includes(l)}
+            onClick={() => toggle(l)}
+          >
             {l}
           </Chip>
         ))}
       </div>
 
-      <div style={{ height: 340, marginTop: 10 }}>
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={cumTable}>
-            <XAxis dataKey="date" />
-            <YAxis allowDecimals={false} />
-            <Tooltip />
-            <Legend />
-            {showOverall && (
-              <Line
-                type="monotone"
-                dataKey="All XP"
-                stroke="#6d28d9"
-                strokeWidth={3}
-                dot={false}
-                legendType="plainline"
-              />
-            )}
-            {languages
-              .filter((l) => selected.includes(l))
-              .map((lang, idx) => (
-                <Line
-                  key={lang}
-                  type="monotone"
-                  dataKey={lang}
-                  stroke={LINE_COLORS[idx % LINE_COLORS.length]}
-                  dot={false}
-                />
-              ))}
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "2fr 1fr",
+          gap: 16,
+          marginTop: 12,
+        }}
+      >
+        <div style={{ height: 340 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={cumTable}>
+<XAxis
+  dataKey="date"
+  stroke={COLOR_PALETTE.textMain}
+  tick={{ fill: COLOR_PALETTE.textMain, fontSize: 12 }}
+/>
 
-      <div style={{ marginTop: 12 }}>
-        <h4 style={{ margin: "6px 0" }}>Recent XP Sources</h4>
-        {xpList.length === 0 ? (
-          <div>No XP yet.</div>
-        ) : (
-          <ul style={{ margin: 0, paddingLeft: 18, maxHeight: 280, overflow: "auto" }}>
-            {xpList.slice(0, 80).map((x) => (
-              <li key={x.key} style={{ marginBottom: 4 }}>
-                <strong>+{x.amount}</strong> XP • {x.lang} • {x.cat} •{" "}
-                <code>{x.name}</code>{" "}
-                <span style={{ opacity: 0.6 }}>({new Date(x.at).toLocaleString()})</span>
-              </li>
-            ))}
-          </ul>
-        )}
+<YAxis
+  allowDecimals={false}
+  stroke={COLOR_PALETTE.textMain}
+  tick={{ fill: COLOR_PALETTE.textMain, fontSize: 12 }}
+/>
+
+
+            <Tooltip
+  contentStyle={{
+    backgroundColor: COLOR_PALETTE.cardBg,
+    color: COLOR_PALETTE.textMain,
+    borderColor: COLOR_PALETTE.cardBorder,
+    borderRadius: 8,
+  }}
+  labelStyle={{ color: COLOR_PALETTE.textMain }}
+  itemStyle={{ color: COLOR_PALETTE.textMain }}
+/>
+
+              <Legend wrapperStyle={{ color: COLOR_PALETTE.textMuted }} />
+              {showOverall && (
+                <Line
+                  type="monotone"
+                  dataKey="All XP"
+                  stroke={COLOR_PALETTE.purple}
+                  strokeWidth={3}
+                  dot={false}
+                  legendType="plainline"
+                />
+              )}
+              {languages
+                .filter((l) => selected.includes(l))
+                .map((lang, idx) => (
+                  <Line
+                    key={lang}
+                    type="monotone"
+                    dataKey={lang}
+                    stroke={LINE_COLORS[idx % LINE_COLORS.length]}
+                    dot={false}
+                  />
+                ))}
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div>
+          <h4 style={{ margin: "6px 0", color: COLOR_PALETTE.purpleSoft }}>
+            Recent XP Sources
+          </h4>
+          {xpList.length === 0 ? (
+            <div style={{ color: COLOR_PALETTE.textMuted }}>No XP yet.</div>
+          ) : (
+            <ul
+              style={{
+                margin: 0,
+                paddingLeft: 18,
+                maxHeight: 320,
+                overflow: "auto",
+                fontSize: 13,
+              }}
+            >
+              {xpList.slice(0, 80).map((x) => (
+                <li key={x.key} style={{ marginBottom: 4 }}>
+                  <strong style={{ color: COLOR_PALETTE.purple }}>
+                    +{x.amount}
+                  </strong>{" "}
+                  XP • {x.lang} • {x.cat} • <code>{x.name}</code>{" "}
+                  <span style={{ opacity: 0.6 }}>
+                    ({new Date(x.at).toLocaleString()})
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </div>
     </section>
   );
+}
+
+/* ============ Grade By Category (Bar) ============ */
+
+function GradeByCategoryChart({ data }) {
+  if (!data || data.length === 0) {
+    return (
+      <section
+        className="card"
+        style={{
+          padding: 12,
+          marginBottom: 16,
+          background: COLOR_PALETTE.cardBg,
+          border: `1px solid ${COLOR_PALETTE.cardBorder}`,
+          color: COLOR_PALETTE.textMain,
+          borderRadius: 12,
+        }}
+      >
+        <h3 style={{ margin: 0, color: COLOR_PALETTE.purpleLight }}>
+          Grades by Category
+        </h3>
+        <div style={{ padding: 12, color: COLOR_PALETTE.textMuted }}>
+          No grade data available.
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section
+      className="card"
+      style={{
+        padding: 12,
+        marginBottom: 16,
+        background: COLOR_PALETTE.cardBg,
+        border: `1px solid ${COLOR_PALETTE.cardBorder}`,
+        color: COLOR_PALETTE.textMain,
+        borderRadius: 12,
+      }}
+    >
+      <h3 style={{ margin: 0, color: COLOR_PALETTE.purpleLight }}>
+        Grades by Category
+      </h3>
+
+      <div style={{ height: 300, marginTop: 16 }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={data}>
+            <defs>
+              <linearGradient id="gradeCategoryBar" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={COLOR_PALETTE.purple} />
+                <stop offset="100%" stopColor={COLOR_PALETTE.purpleLight} />
+              </linearGradient>
+            </defs>
+          <XAxis
+  dataKey="category"
+  stroke={COLOR_PALETTE.textMain}
+  tick={{ fill: COLOR_PALETTE.textMain, fontSize: 12 }}
+/>
+
+<YAxis
+  allowDecimals={false}
+  stroke={COLOR_PALETTE.textMain}
+  tick={{ fill: COLOR_PALETTE.textMain, fontSize: 12 }}
+/>
+
+            <Tooltip
+  contentStyle={{
+    backgroundColor: COLOR_PALETTE.cardBg,
+    color: COLOR_PALETTE.textMain,
+    borderColor: COLOR_PALETTE.cardBorder,
+    borderRadius: 8,
+  }}
+  labelStyle={{ color: COLOR_PALETTE.textMain }}
+  itemStyle={{ color: COLOR_PALETTE.textMain }}
+/>
+
+            <Legend wrapperStyle={{ color: COLOR_PALETTE.textMuted }} />
+
+            <Bar
+              dataKey="total"
+              fill="url(#gradeCategoryBar)"
+              radius={[8, 8, 0, 0]}
+            />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </section>
+  );
+}
+
+/* ============ Top Ten Grades (Bar) ============ */
+
+function TopTenGradesChart({ rows }) {
+  const allLanguages = useMemo(() => {
+    const set = new Set();
+    rows.forEach((r) => {
+      const lang = prettyLang(r?.object?.attrs?.language);
+      if (lang) set.add(lang);
+    });
+    return ["Overall", ...Array.from(set).sort()];
+  }, [rows]);
+
+  const [selectedLang, setSelectedLang] = useState("Overall");
+
+  const topTen = useMemo(() => {
+    const list = rows.map((r) => {
+      const direct = Number(r.grade) || 0;
+      const attempt = Number(
+        r?.results_aggregate?.aggregate?.max?.grade
+      ) || 0;
+      const grade = Math.max(direct, attempt);
+      const lang = prettyLang(r?.object?.attrs?.language);
+      const category = prettyKind(r?.object?.type);
+
+      return {
+        name: r?.object?.name || "(unnamed)",
+        lang,
+        grade,
+        category,
+      };
+    });
+
+    let filtered = list.filter((i) => i.grade > 0);
+    if (selectedLang !== "Overall") {
+      filtered = filtered.filter((i) => i.lang === selectedLang);
+    }
+
+    return filtered.sort((a, b) => b.grade - a.grade).slice(0, 10);
+  }, [rows, selectedLang]);
+
+  const maxGrade = topTen.length > 0 ? topTen[0].grade : 0;
+
+  return (
+    <section
+      className="card"
+      style={{
+        padding: 20,
+        background: COLOR_PALETTE.cardBg,
+        border: `1px solid ${COLOR_PALETTE.cardBorder}`,
+        color: COLOR_PALETTE.textMain,
+        borderRadius: 12,
+      }}
+    >
+      <h3 style={{ marginBottom: 16, color: COLOR_PALETTE.purpleLight }}>
+        Top 10 Grades
+      </h3>
+
+      <div
+        style={{
+          display: "flex",
+          gap: 8,
+          flexWrap: "wrap",
+          marginBottom: 20,
+        }}
+      >
+        {allLanguages.map((lang) => (
+          <Chip
+            key={lang}
+            active={selectedLang === lang}
+            onClick={() => setSelectedLang(lang)}
+          >
+            {lang}
+          </Chip>
+        ))}
+      </div>
+
+      {topTen.length === 0 ? (
+        <div style={{ padding: 12, color: COLOR_PALETTE.textMuted }}>
+          No graded tasks found.
+        </div>
+      ) : (
+        <div style={{ height: 320 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={topTen}>
+              <defs>
+                <linearGradient id="topTenBar" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={COLOR_PALETTE.purple} />
+                  <stop offset="100%" stopColor={COLOR_PALETTE.purpleLight} />
+                </linearGradient>
+              </defs>
+
+              <XAxis dataKey="name" hide />
+             <YAxis
+  stroke={COLOR_PALETTE.textMain}
+  tick={{ fill: COLOR_PALETTE.textMain, fontSize: 12 }}
+/>
+
+           <Tooltip
+  contentStyle={{
+    backgroundColor: COLOR_PALETTE.cardBg,
+    color: COLOR_PALETTE.textMain,
+    borderColor: COLOR_PALETTE.cardBorder,
+    borderRadius: 8,
+  }}
+  labelStyle={{ color: COLOR_PALETTE.textMain }}
+  itemStyle={{ color: COLOR_PALETTE.textMain }}
+/>
+
+
+              <Bar
+                dataKey="grade"
+                radius={[8, 8, 0, 0]}
+                shape={(props) => {
+                  const { x, y, width, height, payload } = props;
+                  const isMax = payload.grade === maxGrade;
+
+                  return (
+                    <g>
+                      {isMax && (
+                        <rect
+                          x={x - 6}
+                          y={y - 6}
+                          width={width + 12}
+                          height={height + 12}
+                          rx={10}
+                          fill="rgba(168, 85, 247, 0.25)"
+                        >
+                          <animate
+                            attributeName="opacity"
+                            values="0.2;0.6;0.2"
+                            dur="2s"
+                            repeatCount="indefinite"
+                          />
+                        </rect>
+                      )}
+
+                      <rect
+                        x={x}
+                        y={y}
+                        width={width}
+                        height={height}
+                        fill="url(#topTenBar)"
+                        rx={6}
+                      />
+
+                      <text
+                        x={x + width / 2}
+                        y={y + height + 16}
+                        textAnchor="middle"
+                        fill={COLOR_PALETTE.textMuted}
+                        fontSize="11px"
+                      >
+                        {payload.category}
+                      </text>
+
+                      <title>
+                        {payload.name} — {payload.category} ({payload.lang})
+                      </title>
+                    </g>
+                  );
+                }}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      )}
+    </section>
+  );
+}
+
+/* ============ Grades By Language (Pie) ============ */
+
+function GradesByLanguageChart({ data }) {
+  return (
+    <section
+      className="card"
+      style={{
+        padding: 12,
+        marginBottom: 16,
+        background: COLOR_PALETTE.cardBg,
+        border: `1px solid ${COLOR_PALETTE.cardBorder}`,
+        color: COLOR_PALETTE.textMain,
+        borderRadius: 12,
+      }}
+    >
+      <h3 style={{ marginBottom: 12, color: COLOR_PALETTE.purpleLight }}>
+        Grades by Language
+      </h3>
+
+      <div style={{ height: 300 }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+       <Tooltip
+  contentStyle={{
+    backgroundColor: COLOR_PALETTE.cardBg,
+    color: COLOR_PALETTE.textMain,
+    borderColor: COLOR_PALETTE.cardBorder,
+    borderRadius: 8,
+  }}
+  labelStyle={{ color: COLOR_PALETTE.textMain }}
+  itemStyle={{ color: COLOR_PALETTE.textMain }}
+/>
+
+<Legend
+  wrapperStyle={{ color: COLOR_PALETTE.textMain }}
+  formatter={(value) => (
+    <span style={{ color: COLOR_PALETTE.textMain }}>{value}</span>
+  )}
+/>
+            <Pie
+              data={data}
+              dataKey="total"
+              nameKey="language"
+              cx="50%"
+              cy="50%"
+              innerRadius="50%"
+              outerRadius="80%"
+            label={{ fill: COLOR_PALETTE.textMain, fontSize: 12 }}
+
+            >
+              {data.map((_, idx) => (
+                <Cell key={idx} fill={LINE_COLORS[idx % LINE_COLORS.length]} />
+              ))}
+            </Pie>
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
+    </section>
+  );
+}
+
+function detectLanguage(name) {
+  if (!name) return "other";
+
+  const n = name.toLowerCase();
+
+  if (n.includes("go") || n.includes("lem") || n.includes("net-cat") || n.includes("forum"))
+    return "go";
+
+  if (n.includes("js") || n.includes("javascript")) return "javascript";
+
+  if (n.includes("sql") || n.includes("tell-me") || n.includes("group-price"))
+    return "sql";
+
+  if (n.includes("docker") || n.includes("ascii-art-web")) return "docker";
+
+  if (n.includes("sh") || n.includes("shell") || n.includes("bash")) return "shell";
+
+  return "other";
 }
 
 /* ====================== Page ====================== */
 
 export default function Profile() {
   const navigate = useNavigate();
-const [xpUp, setXpUp] = useState(0);
-const [xpDown, setXpDown] = useState(0);
+  const [xpUp, setXpUp] = useState(0);
+  const [xpDown, setXpDown] = useState(0);
+  const [level, setLevel] = useState(null);
+
   useEffect(() => {
     const token = getToken();
     if (!token) navigate("/login", { replace: true });
@@ -528,20 +1042,20 @@ const [xpDown, setXpDown] = useState(0);
 
   const [userId, setUserId] = useState(null);
   const [login, setLogin] = useState("(loading…)");
-  const [rows, setRows] = useState([]);     // progress
-const [xpRows, setXpRows] = useState([]); // transactions xp
-const [xpBase, setXpBase] = useState(0);  // from user.totalUp (for accurate level)
+  const [rows, setRows] = useState([]); // progress
+  const [xpRows, setXpRows] = useState([]); // transactions xp
+  const [xpBase, setXpBase] = useState(0);
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(false);
-const [auditRatio, setAuditRatio] = useState(null);
-const [firstName, setFirstName] = useState("");
-const [lastName, setLastName] = useState("");
+  const [auditRatio, setAuditRatio] = useState(null);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
 
-useEffect(() => {
-  async function loadMe() {
-    try {
-      setErr("");
-     const data = await gqlFetch(`
+  useEffect(() => {
+    async function loadMe() {
+      try {
+        setErr("");
+        const data = await gqlFetch(`
   query Me {
     user {
       id
@@ -554,95 +1068,91 @@ useEffect(() => {
   }
 `);
 
+        const me = data?.user?.[0];
+        if (!me?.id) throw new Error("Could not resolve authenticated user.");
+        // NOTE: event_user wasn't fetched here previously; level handled below.
 
-      const me = data?.user?.[0];
-      if (!me?.id) throw new Error("Could not resolve authenticated user.");
+        const xpUpValue = Number(me.totalUp) || 0;
+        const xpDownValue = Number(me.totalDown) || 0;
+        const ratio =
+          xpDownValue > 0 ? (xpUpValue / xpDownValue).toFixed(2) : "0.00";
 
-      const xpUpValue = Number(me.totalUp) || 0;
-      const xpDownValue = Number(me.totalDown) || 0;
-      const ratio = xpDownValue > 0 ? (xpUpValue / xpDownValue).toFixed(2) : "0.00";
-
-      setUserId(me.id);
-      setLogin(me.login || "(unknown)");
-      setFirstName(me.firstName || "");
-setLastName(me.lastName || "");
-      setXpBase(xpUpValue);
-      setXpUp(xpUpValue);
-      setXpDown(xpDownValue);
-      setAuditRatio(ratio);
-
-    } catch (e) {
-      setErr(e?.message || "Failed to load user.");
+        setUserId(me.id);
+        setLogin(me.login || "(unknown)");
+        setFirstName(me.firstName || "");
+        setLastName(me.lastName || "");
+        setXpBase(xpUpValue);
+        setXpUp(xpUpValue);
+        setXpDown(xpDownValue);
+        setAuditRatio(ratio);
+      } catch (e) {
+        setErr(e?.message || "Failed to load user.");
+      }
     }
-  }
-  loadMe();
-}, []);
-
+    loadMe();
+  }, []);
 
   useEffect(() => {
     if (userId == null) return;
 
     async function loadAll() {
+      const token = getToken();
+      if (!token) return;
+
       setLoading(true);
       setErr("");
 
-const xpTotalsQuery = `
-  query XPTotals {
-    user {
-      id
-      login
-      totalUp
-      totalDown
-    }
+      const query = `
+query GetUserData($uid: Int!) {
+  event_user(
+    where: { userId: { _eq: $uid }, level: { _gt: 0 } }
+    order_by: { level: desc }
+    limit: 1
+  ) {
+    level
   }
-`;
 
-     const query = `
-  query AllData($uid:Int!) {
-    progress(
-      where: { userId: { _eq: $uid } }
-      order_by: { createdAt: asc }
-      limit: 2000
-    ) {
-      id
-      grade
-      isDone
-      createdAt
-      object { id name type attrs }
-      results_aggregate { aggregate { max { grade } } }
-    }
-
-    transaction(
-      where: { userId: { _eq: $uid }, type: { _eq: "xp" } }
-      order_by: { createdAt: asc }
-      limit: 5000
-    ) {
-      amount
-      createdAt
-      object { id name type attrs }
-    }
-
+  progress(
+    where: { userId: { _eq: $uid } }
+    order_by: { createdAt: asc }
+    limit: 2000
+  ) {
+    id
+    grade
+    isDone
+    createdAt
+    object { id name type attrs }
+    results_aggregate { aggregate { max { grade } } }
   }
-`;
 
+  transaction(
+    where: { userId: { _eq: $uid }, type: { _eq: "xp" } }
+    order_by: { createdAt: asc }
+    limit: 5000
+  ) {
+    amount
+    createdAt
+    object { id name type attrs }
+  }
+}
+`;
 
       try {
         const data = await gqlFetch(query, { uid: userId });
+        setLevel(data?.event_user?.[0]?.level ?? null);
 
-
-
-
-        const prog = Array.isArray(data?.progress) ? data.progress : [];
+        const prog = data.progress || [];
         setRows(prog);
 
-        const tx = Array.isArray(data?.transaction) ? data.transaction : [];
-        const xpNorm = tx.map((t) => ({
-          amount: Number(t.amount) || 0,
-          createdAt: t.createdAt,
-          langPretty: prettyLang(t?.object?.attrs?.language),
-          object: t.object || null,
-        }));
-        setXpRows(xpNorm);
+        const tx = data.transaction || [];
+        setXpRows(
+          tx.map((t) => ({
+            amount: Number(t.amount),
+            createdAt: t.createdAt,
+            langPretty: prettyLang(t?.object?.attrs?.language),
+            object: t.object,
+          }))
+        );
       } catch (e) {
         setRows([]);
         setXpRows([]);
@@ -661,12 +1171,92 @@ const xpTotalsQuery = `
       const kind = prettyKind(r?.object?.type);
       const cat = computeCategoryFromRow(r);
       const stat = statusFromRow(r);
-      return { ...r, __lang: lang, __kind: kind, __category: cat, __status: stat };
+      return {
+        ...r,
+        __lang: lang,
+        __kind: kind,
+        __category: cat,
+        __status: stat,
+      };
     });
   }, [rows]);
 
-  const questRows = useMemo(() => normalized.filter((r) => r.__category === "Quest"), [normalized]);
-  const projectRows = useMemo(() => normalized.filter((r) => r.__category === "Project"), [normalized]);
+  const totalProjectGrade = useMemo(() => {
+    const projectGrades = normalized
+      .filter((r) => r?.object?.type === "project" && r?.isDone)
+      .map((r) => {
+        const direct = r.grade;
+        const attemptGrade = r.results_aggregate?.aggregate?.max?.grade;
+        return direct ?? attemptGrade ?? 0;
+      });
+
+    if (projectGrades.length === 0) return 0;
+
+    const sum = projectGrades.reduce((a, b) => a + Number(b), 0);
+    return Math.round(sum * 100) / 100;
+  }, [normalized]);
+
+  const totalGrade = useMemo(() => {
+    return rows.reduce((sum, r) => {
+      const direct = Number(r?.grade) || 0;
+      const attempt =
+        Number(r?.results_aggregate?.aggregate?.max?.grade) || 0;
+      const effective = Math.max(direct, attempt);
+      return sum + effective;
+    }, 0);
+  }, [rows]);
+
+  const gradeByCategory = useMemo(() => {
+    const map = new Map();
+
+    for (const r of rows) {
+      const type = (r?.object?.type || "other").toLowerCase();
+
+      const direct = Number(r?.grade) || 0;
+      const attempt =
+        Number(r?.results_aggregate?.aggregate?.max?.grade) || 0;
+      const effective = Math.max(direct, attempt);
+
+      if (effective <= 0) continue;
+
+      map.set(type, (map.get(type) || 0) + effective);
+    }
+
+    return Array.from(map.entries()).map(([category, total]) => ({
+      category,
+      total: Math.round(total * 100) / 100,
+    }));
+  }, [rows]);
+
+  const gradesByLanguage = useMemo(() => {
+    const totals = {};
+
+    rows.forEach((r) => {
+      const lang = prettyLang(r?.object?.attrs?.language);
+      const direct = Number(r.grade) || 0;
+      const attempt =
+        Number(r?.results_aggregate?.aggregate?.max?.grade) || 0;
+      const grade = Math.max(direct, attempt);
+
+      if (grade <= 0) return;
+
+      totals[lang] = (totals[lang] || 0) + grade;
+    });
+
+    return Object.entries(totals).map(([language, total]) => ({
+      language,
+      total: Math.round(total * 100) / 100,
+    }));
+  }, [rows]);
+
+  const questRows = useMemo(
+    () => normalized.filter((r) => r.__category === "Quest"),
+    [normalized]
+  );
+  const projectRows = useMemo(
+    () => normalized.filter((r) => r.__category === "Project"),
+    [normalized]
+  );
 
   function logout() {
     clearToken();
@@ -674,45 +1264,111 @@ const xpTotalsQuery = `
   }
 
   return (
- <div style={{ padding: "40px 20px", maxWidth: 1200, margin: "0 auto" }}>
-  <header
-    style={{
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      background: "white",
-      padding: "16px 24px",
-      borderRadius: 12,
-      boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
-      marginBottom: 24,
-    }}
-  >
-    <h2 style={{ color: "#6d28d9", margin: 0 }}>Dashboard</h2>
-    <div style={{ color: "#6b7280" }}>
-      Logged in as <strong>{login}</strong>
-      {loading && " • Loading…"}
+    <div
+      style={{
+        padding: "40px 20px",
+        maxWidth: 1200,
+        margin: "0 auto",
+        background: `radial-gradient(circle at top, #111827 0, ${COLOR_PALETTE.bg} 55%, #000 100%)`,
+        minHeight: "100vh",
+        color: COLOR_PALETTE.textMain,
+      }}
+    >
+      <header
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          background: COLOR_PALETTE.cardBg,
+          padding: "16px 24px",
+          borderRadius: 16,
+          boxShadow: "0 18px 45px rgba(15,23,42,0.9)",
+          marginBottom: 24,
+          border: `1px solid ${COLOR_PALETTE.cardBorder}`,
+        }}
+      >
+        <h2
+          style={{
+            color: COLOR_PALETTE.purple,
+            margin: 0,
+            fontWeight: 600,
+            letterSpacing: 0.2,
+          }}
+        >
+          Dashboard
+        </h2>
+        <div style={{ color: COLOR_PALETTE.textMuted, fontSize: 14 }}>
+          Logged in as <strong style={{ color: COLOR_PALETTE.textMain }}>
+            {login}
+          </strong>
+          {loading && " • Loading…"}
+        </div>
+        <button
+          onClick={logout}
+          style={{
+            background: COLOR_PALETTE.purpleDark,
+            color: COLOR_PALETTE.textMain,
+            borderRadius: 999,
+            border: "none",
+            padding: "8px 14px",
+            cursor: "pointer",
+            fontSize: 13,
+          }}
+        >
+          Log out
+        </button>
+      </header>
+
+      <ProfileSummary
+        user={{ id: userId, login, firstName, lastName }}
+        auditRatio={auditRatio}
+        progress={normalized}
+        xpBase={xpBase}
+        xpDown={xpDown}
+        xpUp={xpUp}
+        level={level}
+        totalProjectGrade={totalProjectGrade}
+        totalGrade={totalGrade}
+      />
+
+      {err && <div className="error">{err}</div>}
+
+      <SkillsSection xpRows={xpRows} />
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "2fr 1fr",
+          gap: 20,
+          marginBottom: 24,
+        }}
+      >
+        <ProjectsSection baseRows={projectRows} />
+        <QuestsSection baseRows={questRows} />
+      </div>
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr",
+          gap: 20,
+          marginBottom: 24,
+        }}
+      >
+        <TopTenGradesChart rows={rows} />
+      </div>
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: 20,
+          marginBottom: 24,
+        }}
+      >
+        <GradeByCategoryChart data={gradeByCategory} />
+        <GradesByLanguageChart data={gradesByLanguage} />
+      </div>
     </div>
-    <button onClick={logout}>Log out</button>
-  </header>
-
-  {err && <div className="error">{err}</div>}
-
-  {userId && (
- <ProfileSummary
-   user={{ id: userId, login, firstName, lastName }}
-  userid={{ id: userId, login }}
-  xpBase={xpBase}
-  xpFallback={xpRows.reduce((sum, t) => sum + (Number(t.amount) || 0), 0)}
-  auditRatio={auditRatio}
-  xpUp={xpUp}
-  xpDown={xpDown}
-/>  )}
-
-  <QuestsSection baseRows={questRows} />
-  <ProjectsSection baseRows={projectRows} />
-  <SkillsSection xpRows={xpRows} />
-</div>
-
   );
 }
-

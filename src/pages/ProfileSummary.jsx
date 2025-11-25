@@ -1,85 +1,140 @@
 import React from "react";
 import "../App.css";
 
-export default function ProfileSummary({ user, xpBase, xpFallback, auditRatio, xpUp, xpDown }) {
+export default function ProfileSummary({
+  user,
+  xpBase,
+  auditRatio,
+  xpUp,
+  xpDown,
+  level,
+  totalGrade,
+}) {
   if (!user) return null;
-
-  const sourceXP = Number.isFinite(xpBase) && xpBase > 0 ? xpBase : (Number(xpFallback) || 0);
 
   const XP_PER_LEVEL = Number(import.meta.env.VITE_XP_PER_LEVEL ?? 40000);
 
-  const level = Math.floor(sourceXP / XP_PER_LEVEL);
   const levelPctOf50 = Math.min(100, Math.round((level / 50) * 100));
+  const auditRatioNum = Number(auditRatio || 0);
+  const auditRatio1 = auditRatioNum.toFixed(1);
+  const totalGrade1 = Number(totalGrade).toFixed(1);
+
+  // Colors (aligned with dark neon theme)
+  const purple = "#a855f7";
+  const purpleLight = "#c084fc";
+  const bgCard = "#020617";
+  const border = "#1f2937";
+  const textMain = "#e5e7eb";
+  const textMuted = "#9ca3af";
+
+  // Audit ratio color (keep semantic but slightly softer)
+  let auditColor = "#f97316"; // default orange if weird
+  if (auditRatioNum >= 1) auditColor = "#22c55e"; // green
+  else if (auditRatioNum >= 0.5) auditColor = "#eab308"; // amber
+  else auditColor = "#ef4444"; // red
 
   return (
-    
-  <section
-  className="card"
-  style={{
-    marginBottom: "1.5rem",
-    textAlign: "center",
-    padding: "1.5rem 2rem",
-  }}
->
-  <h2 style={{ color: "#6d28d9", marginBottom: "0.5rem" }}>
-    Welcome to your dashboard, {user.firstName || user.login}!
-  </h2>
-  <p style={{ marginBottom: "1.5rem", color: "#6b7280" }}>
-    Here’s a quick look at your progress and audit stats.
-  </p>
-
-  <div
-    style={{
-      display: "grid",
-      gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
-      gap: "1rem",
-      textAlign: "left",
-    }}
-  >
-    <div><strong>User Name:</strong> {user.login}</div>
-    <div><strong>User ID:</strong> {user.id}</div>
-    <div><strong>Current Level:</strong> {level}</div>
-    <div><strong>Course Progress:</strong> {levelPctOf50}%</div>
-    
-    <div>
-      <strong>Audit Ratio:</strong>{" "}
-      <span
+    <section
+      className="card"
+      style={{
+        marginBottom: "1.5rem",
+        textAlign: "center",
+        padding: "1.75rem 2rem",
+        background: bgCard,
+        borderRadius: 16,
+        border: `1px solid ${border}`,
+        boxShadow: "0 18px 45px rgba(15,23,42,0.9)",
+        color: textMain,
+      }}
+    >
+      <h2
         style={{
-          color:
-            auditRatio >= 1
-              ? "#10b981"   
-              : auditRatio >= 0.5
-              ? "#facc15"  
-              : "#ef4444",  
-          fontWeight: 700,
+          color: purple,
+          marginBottom: "0.5rem",
+          fontSize: 22,
+          fontWeight: 600,
         }}
       >
-        {auditRatio}
-      </span>
-    </div>
-    <div><strong>XP Up:</strong> {xpUp?.toLocaleString() || 0}</div>
-    <div><strong>XP Down:</strong> {xpDown?.toLocaleString() || 0}</div>
-  </div>
+        Welcome to your dashboard, {user.firstName || user.login}!
+      </h2>
+      <p
+        style={{
+          marginBottom: "1.5rem",
+          color: textMuted,
+          fontSize: 14,
+        }}
+      >
+        Here’s a quick overview of your levels, grades, and audit stats.
+      </p>
 
-  <div
-    style={{
-      background: "#e5e7eb",
-      height: "10px",
-      borderRadius: "6px",
-      marginTop: "1.5rem",
-      overflow: "hidden",
-    }}
-  >
-    <div
-      style={{
-        width: `${levelPctOf50}%`,
-        height: "100%",
-        background: "linear-gradient(90deg, #6d28d9, #9333ea)",
-        transition: "width 0.4s ease",
-      }}
-    />
-  </div>
-</section>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))",
+          gap: "0.9rem",
+          textAlign: "left",
+          fontSize: 14,
+        }}
+      >
+        <div>
+          <strong style={{ color: purpleLight }}>User Name:</strong>{" "}
+          {user.login}
+        </div>
+        <div>
+          <strong style={{ color: purpleLight }}>User ID:</strong> {user.id}
+        </div>
+        <div>
+          <strong style={{ color: purpleLight }}>Level:</strong>{" "}
+          {level ?? "—"}
+        </div>
+        <div>
+          <strong style={{ color: purpleLight }}>Completion (to 50):</strong>{" "}
+          {levelPctOf50}%
+        </div>
+        <div>
+          <strong style={{ color: purpleLight }}>Total Grade:</strong>{" "}
+          {totalGrade1}
+        </div>
+        <div>
+          <strong style={{ color: purpleLight }}>Audit Ratio:</strong>{" "}
+          <span
+            style={{
+              color: auditColor,
+              fontWeight: 700,
+            }}
+          >
+            {auditRatio1}
+          </span>
+        </div>
+        <div>
+          <strong style={{ color: purpleLight }}>XP Up:</strong>{" "}
+          {xpUp?.toLocaleString() || 0}
+        </div>
+        <div>
+          <strong style={{ color: purpleLight }}>XP Down:</strong>{" "}
+          {xpDown?.toLocaleString() || 0}
+        </div>
+      </div>
 
+      <div
+        style={{
+          background: "#111827",
+          height: "10px",
+          borderRadius: "999px",
+          marginTop: "1.6rem",
+          overflow: "hidden",
+        }}
+      >
+        <div
+          style={{
+            width: `${levelPctOf50}%`,
+            height: "100%",
+            background:
+              "linear-gradient(90deg, rgba(168,85,247,1), rgba(129,140,248,1))",
+            transition: "width 0.4s ease",
+          }}
+        />
+      </div>
+    </section>
   );
 }
