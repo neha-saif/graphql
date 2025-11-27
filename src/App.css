@@ -98,7 +98,13 @@ input {
   margin-bottom: 14px;
   transition: 0.2s ease;
 }
+ input#identity {
+  width: 95% !important;
+ }
 
+input#password{
+  width: 95% !important;
+ }
 input:focus {
   border-color: #a855f7;
   box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.3);
@@ -109,19 +115,23 @@ input:focus {
    LOGIN CARD (main.card)
 ---------------------------------*/
 
+/* Login card */
 main.card {
-  margin: auto;
-  background: #111827;
+  background: #0b1020;
+  border-radius: 18px;
   border: 1px solid #1f2937;
   box-shadow: 0 8px 28px rgba(0,0,0,0.55);
-  padding: 3rem 2.5rem;   /* increased padding */
-  border-radius: 18px;
-  width: 100%;
-  max-width: 420px;
+
+  width: 360px;          /* fixed clean width */
+  max-width: 90vw;       /* responsive */
+
+  padding: 24px;          /* creates natural inside spacing */
   display: flex;
   flex-direction: column;
-  color: #e5e7eb;
+  box-sizing: border-box;
 }
+
+
 
 
 main.card form {
@@ -130,11 +140,28 @@ main.card form {
   width: 100%;
 }
 
-main.card input {
-  padding: 14px 12px;  /* more breathing room */
-  margin-bottom: 18px;
-  font-size: 16px;
+/* Labels */
+main.card label {
+  font-size: 14px;
+  margin-bottom: 6px;
+  display: block;
 }
+
+/* Inputs — margin on ALL sides */
+main.card input {
+  width: 95%;    /* reduce width so margin fits inside card */
+  box-sizing: border-box;
+
+  padding: 10px 12px;          /* inside spacing */
+  margin: 12px;                /* OUTSIDE spacing on ALL sides */
+
+  border-radius: 10px;
+  border: 1px solid #374151;
+  background: #111827;
+  color: #e5e7eb;
+  font-size: 14px;
+}
+
 
 
 /* ------------------------------
@@ -208,16 +235,18 @@ main.card input {
 }
 
 
-/* LOGIN PAGE CENTERING */
+/* LOGIN PAGE OVERRIDES */
 body.login-page {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: #0d1117; /* same as theme */
+  padding: 0;
 }
 
 body.login-page #root {
-  max-width: none;
+  margin: 0;
   padding: 0;
+  max-width: none;
+  width: 100%;
 }
