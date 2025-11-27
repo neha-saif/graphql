@@ -1051,8 +1051,11 @@ export default function Profile() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
 
-  useEffect(() => {
-    async function loadMe() {
+useEffect(() => {
+  const token = getToken();
+  if (!token) return;   // prevents bad request fallback to graphql/graphql
+  async function loadMe() {
+
       try {
         setErr("");
         const data = await gqlFetch(`
