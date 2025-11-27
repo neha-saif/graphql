@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { getToken, clearToken } from "../lib/auth.js";
-import { gqlFetch } from "../graphql.js";
+import { gqlFetch } from "../api.js";
 import ProfileSummary from "./ProfileSummary.jsx";
 
 import {
