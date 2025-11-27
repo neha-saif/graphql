@@ -1,7 +1,7 @@
 import { getToken } from "./lib/auth.js";
 
-const ENDPOINT = "/graphql/graphql";
-console.log("PRODUCTION ENDPOINT:", import.meta.env.VITE_GRAPHQL_ENDPOINT);
+let ENDPOINT = import.meta.env.VITE_GRAPHQL_ENDPOINT;
+console.log("PRODUCTION ENDPOINT:", ENDPOINT);
 
 // helper for graphql api calls, fetches and attaches token to the auth token if user is logged in
 export async function gqlFetch(query, variables = {}, extraHeaders = {}) {
@@ -10,6 +10,7 @@ export async function gqlFetch(query, variables = {}, extraHeaders = {}) {
   }
 
   const token = getToken();
+
   const res = await fetch(ENDPOINT, {
     method: "POST",
     headers: {
@@ -20,10 +21,8 @@ export async function gqlFetch(query, variables = {}, extraHeaders = {}) {
     body: JSON.stringify({ query, variables }),
   });
 
-
   const text = await res.text();
-  
-//error handling
+
   let json;
   try {
     json = text ? JSON.parse(text) : {};
