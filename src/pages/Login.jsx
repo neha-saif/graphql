@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { signIn, saveToken, decodeJwtPayload } from "../lib/auth.js";
 
@@ -10,6 +10,15 @@ export default function Login() {
   const [ok, setOk] = useState("");
   const [err, setErr] = useState("");
   const navigate = useNavigate();
+useEffect(() => {
+  // add login-page class when login is mounted
+  document.body.classList.add("login-page");
+
+  // remove it when leaving the page
+  return () => {
+    document.body.classList.remove("login-page");
+  };
+}, []);
 
   async function onSubmit(e) {
     e.preventDefault();

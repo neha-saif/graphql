@@ -114,7 +114,7 @@ main.card {
   background: #111827;
   border: 1px solid #1f2937;
   box-shadow: 0 8px 28px rgba(0,0,0,0.55);
-  padding: 2.5rem 2rem;
+  padding: 3rem 2.5rem;   /* increased padding */
   border-radius: 18px;
   width: 100%;
   max-width: 420px;
@@ -123,6 +123,7 @@ main.card {
   color: #e5e7eb;
 }
 
+
 main.card form {
   display: flex;
   flex-direction: column;
@@ -130,9 +131,11 @@ main.card form {
 }
 
 main.card input {
-  width: 100% !important;
-  max-width: none !important;
+  padding: 14px 12px;  /* more breathing room */
+  margin-bottom: 18px;
+  font-size: 16px;
 }
+
 
 /* ------------------------------
    ERRORS / SUCCESS
@@ -205,3 +208,16 @@ main.card input {
 }
 
 
+/* LOGIN PAGE CENTERING */
+body.login-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #0d1117; /* same as theme */
+}
+
+body.login-page #root {
+  max-width: none;
+  padding: 0;
+}
