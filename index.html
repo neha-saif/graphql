@@ -9,13 +9,24 @@
   </head>
   <body>
     <div id="root"></div>
+
     <script>
-  // If user somehow opens /profile or /login directly,
-  // force them back to the SPA root.
-  if (!location.pathname.startsWith("/graphql")) {
-    location.replace("/graphql");
-  }
-</script>
+      const p = location.pathname;
+
+      // Allow these:
+      // /graphql
+      // /graphql/
+      // /graphql/*
+      const ok =
+        p === "/graphql" ||
+        p === "/graphql/" ||
+        p.startsWith("/graphql/");
+
+      // Redirect everything else to SPA root
+      if (!ok) {
+        location.replace("/graphql/");
+      }
+    </script>
 
   </body>
 </html>
