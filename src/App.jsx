@@ -5,23 +5,23 @@ import { getToken } from "./lib/auth.js";
 
 function PrivateRoute({ children }) {
   const token = getToken();
-  return token ? children : <Navigate to="/login" replace />;
+  return token ? children : <Navigate to="login" replace />;
 }
 
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/login" replace />} />
-      <Route path="/login" element={<Login />} />
+      <Route path="/" element={<Navigate to="login" replace />} />
+      <Route path="login" element={<Login />} />
       <Route
-        path="/profile"
+        path="profile"
         element={
           <PrivateRoute>
             <Profile />
           </PrivateRoute>
         }
       />
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      <Route path="*" element={<Navigate to="login" replace />} />
     </Routes>
   );
 }
