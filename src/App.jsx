@@ -3,7 +3,6 @@ import Login from "./pages/Login.jsx";
 import Profile from "./pages/Profile.jsx";
 import { getToken } from "./lib/auth.js";
 
-// private route
 function PrivateRoute({ children }) {
   const token = getToken();
   return token ? children : <Navigate to="/login" replace />;
