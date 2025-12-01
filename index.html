@@ -9,5 +9,13 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+  // If user somehow opens /profile or /login directly,
+  // force them back to the SPA root.
+  if (!location.pathname.startsWith("/graphql")) {
+    location.replace("/graphql");
+  }
+</script>
+
   </body>
 </html>
