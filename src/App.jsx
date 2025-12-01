@@ -1,19 +1,27 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login.jsx";
 import Profile from "./pages/Profile.jsx";
-import { getToken } from "./lib/auth.js";  
+import { getToken } from "./lib/auth.js";
 
+// private route
 function PrivateRoute({ children }) {
-  return getToken() ? children : <Navigate to="/login" replace />;
+  const token = getToken();
+  return token ? children : <Navigate to="/login" replace />;
 }
-//routes all paths to respective pages
 
 export default function App() {
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="/login" element={<Login />} />
-      <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
+      <Route
+        path="/profile"
+        element={
+          <PrivateRoute>
+            <Profile />
+          </PrivateRoute>
+        }
+      />
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );

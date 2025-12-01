@@ -1035,10 +1035,14 @@ export default function Profile() {
   const [xpDown, setXpDown] = useState(0);
   const [level, setLevel] = useState(null);
 
-  useEffect(() => {
-    const token = getToken();
-    if (!token) navigate("/login", { replace: true });
-  }, [navigate]);
+useEffect(() => {
+  const token = getToken();
+  if (!token) {
+    // small delay to allow hydration
+    setTimeout(() => navigate("/login", { replace: true }), 50);
+  }
+}, []);
+
 
   const [userId, setUserId] = useState(null);
   const [login, setLogin] = useState("(loading…)");
