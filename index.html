@@ -8,24 +8,6 @@
   <body>
     <div id="root"></div>
 
-    <script>
-      const p = location.pathname;
-
-      // Allow these:
-      // /graphql
-      // /graphql/
-      // /graphql/*
-      const ok =
-        p === "/graphql" ||
-        p === "/graphql/" ||
-        p.startsWith("/graphql/");
-
-      // Redirect everything else to SPA root
-      if (!ok) {
-        location.replace("/graphql/");
-      }
-    </script>
-
-    <script type="module" src="./src/main.jsx"></script>
+    <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
