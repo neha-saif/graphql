@@ -29,7 +29,7 @@ export default function App() {
         element={token ? <Profile /> : <Navigate to="/login" replace />}
       />
 
-      <Route path="*" element={token? <Profile /> : <Navigate to="/" replace />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }
