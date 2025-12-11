@@ -27,12 +27,10 @@ export default function App() {
       />
 
       {/* Profile: if not logged in, send to login */}
-     <Route
-  path="/profile"
-  element={hasToken ? <Profile /> : <Navigate to="/login" replace />}
-/>
-:contentReference[oaicite:0]{index=0}
-
+      <Route
+        path="/profile"
+        element={hasToken ? <Profile /> : <Navigate to="/login" replace />}
+      />
 
       {/* Anything else: go through the same logic as "/" */}
       <Route path="*" element={<Navigate to="/" replace />} />
