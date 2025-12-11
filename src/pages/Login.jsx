@@ -31,8 +31,7 @@ useEffect(() => {
     }
     setBusy(true);
     try {
-      const token = await signIn(identity, password);
-      saveToken(token);
+    await signIn(identity, password);
 
       const payload = decodeJwtPayload(token) || {};
       const claims = payload["https://hasura.io/jwt/claims"] || {};
@@ -42,7 +41,7 @@ useEffect(() => {
 
 setOk(`Welcome${who ? ", " + who : ""}!`);
 console.log("Login success, navigating to /profile");
-navigate("/profile");
+    navigate("/profile", { replace: true });
     } catch (e) {
       setErr(e?.message || "Invalid credentials.");
     } finally {

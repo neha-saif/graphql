@@ -1256,9 +1256,8 @@ query GetUserData($uid: Int!) {
   );
 
 function logout() {
-      signOut();
+signOut();
   navigate("/login", { replace: true });
-
 }
 
   return (
