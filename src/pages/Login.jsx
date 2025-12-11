@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { signIn } from "../lib/auth.js";
+import { saveToken, signIn } from "../lib/auth.js";
 
 //handle signin form and submission
 export default function Login() {
@@ -32,6 +32,7 @@ useEffect(() => {
     setBusy(true);
     try {
 const token = await signIn(identity, password);
+saveToken(token);
 
       setOk("Welcome! Redirecting…");
 console.log("Login success, navigating to /profile");
