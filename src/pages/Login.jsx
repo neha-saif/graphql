@@ -31,11 +31,11 @@ useEffect(() => {
     }
     setBusy(true);
     try {
-      await signIn(identity, password);
+const token = await signIn(identity, password);
 
       setOk("Welcome! Redirecting…");
 console.log("Login success, navigating to /profile");
-    navigate("/profile");
+    navigate("/profile", { replace: true });
     } catch (e) {
       setErr(e?.message || "Invalid credentials.");
     } finally {
