@@ -1301,7 +1301,7 @@ signOut();
           {loading && " • Loading…"}
         </div>
         <button
-          onClick={logout}
+          onClick={logout()}
           style={{
             background: COLOR_PALETTE.purpleDark,
             color: COLOR_PALETTE.textMain,
