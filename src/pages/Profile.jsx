@@ -1258,8 +1258,9 @@ query GetUserData($uid: Int!) {
   );
 
 function logout() {
-  clearToken();
   navigate("/login", { replace: true });
+    clearToken();
+
 }
 
 
