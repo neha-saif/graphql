@@ -33,7 +33,8 @@ export default function App() {
       />
 
       {/* Anything else: go through the same logic as "/" */}
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={hasToken ? <Profile /> : <Navigate to="/login" replace />}
+ />
     </Routes>
   );
 }
