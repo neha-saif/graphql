@@ -32,7 +32,7 @@ useEffect(() => {
     setBusy(true);
     try {
 const token = await signIn(identity, password);
-saveToken(token);
+saveToken(token)
 
       setOk("Welcome! Redirecting…");
 console.log("Login success, navigating to /profile");
@@ -150,7 +150,7 @@ console.log("Login success, navigating to /profile");
           />
 
           <button
-            onClick={Login()}
+            disabled={busy}
             style={{
               width: "100%",
               marginTop: 4,
