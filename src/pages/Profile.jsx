@@ -1049,7 +1049,6 @@ export default function Profile() {
 
 useEffect(() => {
   const token = getToken();
-  if (!token) return;   // prevents bad request fallback to graphql/graphql
   async function loadMe() {
 
       try {
@@ -1069,7 +1068,6 @@ useEffect(() => {
 
         const me = data?.user?.[0];
         if (!me?.id) throw new Error("Could not resolve authenticated user.");
-        // NOTE: event_user wasn't fetched here previously; level handled below.
 
         const xpUpValue = Number(me.totalUp) || 0;
         const xpDownValue = Number(me.totalDown) || 0;
