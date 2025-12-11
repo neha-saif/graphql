@@ -21,7 +21,7 @@ useEffect(() => {
   };
 }, []);
 
-  async function onSubmit(e) {
+  async function handleLogin(e) {
     e.preventDefault();
     setOk("");
     setErr("");
