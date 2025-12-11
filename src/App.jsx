@@ -4,11 +4,11 @@ import Profile from "./pages/Profile.jsx";
 import { getToken } from "./lib/auth.js";
 
 export default function App() {
-  const hasToken = !!getToken(); // read from localStorage on every render
+  const hasToken = !!getToken(); // check localStorage on each render
 
   return (
     <Routes>
-      {/* Root: decide where to go based on token */}
+      {/* Root: send to profile if logged in, otherwise login */}
       <Route
         path="/"
         element={
@@ -20,19 +20,19 @@ export default function App() {
         }
       />
 
-      {/* Login: if already logged in, bounce to profile */}
+      {/* Login: if already logged in, don't show login, go to profile */}
       <Route
         path="/login"
         element={hasToken ? <Navigate to="/profile" replace /> : <Login />}
       />
 
-      {/* Profile: if not logged in, bounce to login */}
+      {/* Profile: if not logged in, send to login */}
       <Route
         path="/profile"
         element={hasToken ? <Profile /> : <Navigate to="/login" replace />}
       />
 
-      {/* Anything else → root (which re-runs the same token check) */}
+      {/* Anything else: go through the same logic as "/" */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
