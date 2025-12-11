@@ -101,7 +101,7 @@ async function handleLogin(e) {
           Enter your credentials to access your profile dashboard.
         </p>
 
-<form onSubmit={handleLogin} noValidate>
+<form onSubmit={handleLogin()} noValidate>
 
             <label
             htmlFor="identity"
