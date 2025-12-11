@@ -41,7 +41,7 @@ useEffect(() => {
         : payload.login ?? "";
 
       setOk(`Welcome${who ? ", " + who : ""}! Redirecting…`);
-setTimeout(() => navigate("/profile"), 600);
+navigate("/profile");
     } catch (e) {
       setErr(e?.message || "Invalid credentials.");
     } finally {
