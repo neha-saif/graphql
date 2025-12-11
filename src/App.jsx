@@ -4,32 +4,27 @@ import Profile from "./pages/Profile.jsx";
 import { getToken } from "./lib/auth.js";
 
 export default function App() {
+  const token = getToken();
   return (
     <Routes>
       <Route
         path="/"
         element={
-          getToken()
-            ? <Navigate to="/profile" replace />
-            : <Navigate to="/login" replace />
+            token ? <Navigate to="/profile" replace /> : <Navigate to="/login" replace />
         }
       />
 
       <Route
         path="/login"
         element={
-          getToken()
-            ? <Navigate to="/profile" replace />
-            : <Login />
+         token ? <Navigate to="/profile" replace /> : <Login />
         }
       />
 
       <Route
         path="/profile"
         element={
-          getToken()
-            ? <Profile />
-            : <Navigate to="/login" replace />
+          token ? <Profile /> : <Navigate to="/login" replace />
         }
       />
 
