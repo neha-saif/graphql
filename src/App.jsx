@@ -23,7 +23,7 @@ export default function App() {
       {/* Login: if already logged in, don't show login, go to profile */}
       <Route
         path="/login"
-        element={hasToken ? <Navigate to="/profile" replace /> : <Login />}
+        element={<Login/>}
       />
 
       {/* Profile: if not logged in, send to login */}
