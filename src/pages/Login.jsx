@@ -21,28 +21,31 @@ useEffect(() => {
   };
 }, []);
 
-  async function handleLogin(e) {
-    e.preventDefault();
-    setOk("");
-    setErr("");
-    if (!identity || !password) {
-      setErr("Please enter your username/email and password.");
-      return;
-    }
-    setBusy(true);
-    try {
-const token = await signIn(identity, password);
-saveToken(token)
+async function handleLogin(e) {
+  e.preventDefault();
+  setOk("");
+  setErr("");
 
-      setOk("Welcome! Redirecting…");
-console.log("Login success, navigating to /profile");
-    navigate("/profile", { replace: true });
-    } catch (e) {
-      setErr(e?.message || "Invalid credentials.");
-    } finally {
-      setBusy(false);
-    }
+  if (!identity || !password) {
+    setErr("Please enter your username/email and password.");
+    return;
   }
+
+  setBusy(true);
+  try {
+    const token = await signIn(identity, password);
+    saveToken(token);
+
+    setOk("Welcome! Redirecting…");
+    console.log("Login success, navigating to /profile");
+    navigate("/profile");
+  } catch (e) {
+    setErr(e?.message || "Invalid credentials.");
+  } finally {
+    setBusy(false);
+  }
+}
+
 
   const purple = "#a855f7";
   const purpleLight = "#c084fc";
@@ -98,10 +101,8 @@ console.log("Login success, navigating to /profile");
           Enter your credentials to access your profile dashboard.
         </p>
 
-<form
-  handleLogin={(e) => e.preventDefault()} // stop native submit
-  noValidate
->
+<form onSubmit={handleLogin} noValidate>
+
             <label
             htmlFor="identity"
             style={{
@@ -153,9 +154,8 @@ console.log("Login success, navigating to /profile");
           />
 
           <button
-  type="button"
+  type="submit"
     disabled={busy}
-    onClick={handleLogin}  
                 style={{
               width: "100%",
               marginTop: 4,
