@@ -98,8 +98,11 @@ console.log("Login success, navigating to /profile");
           Enter your credentials to access your profile dashboard.
         </p>
 
-        <form onSubmit={onSubmit} noValidate>
-          <label
+<form
+  onSubmit={(e) => e.preventDefault()} // stop native submit
+  noValidate
+>
+            <label
             htmlFor="identity"
             style={{
               display: "block",
@@ -150,8 +153,10 @@ console.log("Login success, navigating to /profile");
           />
 
           <button
-            disabled={busy}
-            style={{
+  type="button"
+    disabled={busy}
+    onClick={handleLogin}  
+                style={{
               width: "100%",
               marginTop: 4,
               padding: "10px 0",
@@ -168,7 +173,7 @@ console.log("Login success, navigating to /profile");
           </button>
 
           {err && (
-            <div className="error" style={{ marginTop: 12 }}>
+            <div className="error" role= "alert" style={{ marginTop: 12 }}>
               {err}
             </div>
           )}
