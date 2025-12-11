@@ -31,7 +31,7 @@ useEffect(() => {
     }
     setBusy(true);
     try {
-    await signIn(identity, password);
+      await signIn(identity, password);
 
       const payload = decodeJwtPayload(token) || {};
       const claims = payload["https://hasura.io/jwt/claims"] || {};
