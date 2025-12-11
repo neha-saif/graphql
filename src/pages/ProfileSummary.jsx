@@ -19,7 +19,6 @@ export default function ProfileSummary({
   const auditRatio1 = auditRatioNum.toFixed(1);
   const totalGrade1 = Number(totalGrade).toFixed(1);
 
-  // Colors (aligned with dark neon theme)
   const purple = "#a855f7";
   const purpleLight = "#c084fc";
   const bgCard = "#020617";
@@ -27,7 +26,6 @@ export default function ProfileSummary({
   const textMain = "#e5e7eb";
   const textMuted = "#9ca3af";
 
-  // Audit ratio color (keep semantic but slightly softer)
   let auditColor = "#f97316"; // default orange if weird
   if (auditRatioNum >= 1) auditColor = "#22c55e"; // green
   else if (auditRatioNum >= 0.5) auditColor = "#eab308"; // amber

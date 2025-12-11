@@ -3,25 +3,33 @@ import Login from "./pages/Login.jsx";
 import Profile from "./pages/Profile.jsx";
 import { getToken } from "./lib/auth.js";
 
-function PrivateRoute({ children }) {
-  const token = getToken();
-  return token ? children : <Navigate to="/login" replace />;
-}
-
 export default function App() {
+  const token = getToken(); 
+
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/login" replace />} />
-      <Route path="/login" element={<Login />} />
       <Route
-        path="/profile"
+        path="/"
         element={
-          <PrivateRoute>
-            <Profile />
-          </PrivateRoute>
+          token ? (
+            <Navigate to="/profile" replace />
+          ) : (
+            <Navigate to="/login" replace />
+          )
         }
       />
-      <Route path="*" element={<Navigate to="/login" replace />} />
+
+      <Route
+        path="/login"
+        element={token ? <Navigate to="/profile" replace /> : <Login />}
+      />
+
+      <Route
+        path="/profile"
+        element={token ? <Profile /> : <Navigate to="/login" replace />}
+      />
+
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

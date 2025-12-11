@@ -11,6 +11,7 @@ export default function Login() {
   const [err, setErr] = useState("");
   const navigate = useNavigate();
 useEffect(() => {
+
   // add login-page class when login is mounted
   document.body.classList.add("login-page");
 
