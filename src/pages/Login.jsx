@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { signIn, saveToken, decodeJwtPayload } from "../lib/auth.js";
+import { signIn } from "../lib/auth.js";
 
 //handle signin form and submission
 export default function Login() {
@@ -33,15 +33,9 @@ useEffect(() => {
     try {
       await signIn(identity, password);
 
-      const payload = decodeJwtPayload(token) || {};
-      const claims = payload["https://hasura.io/jwt/claims"] || {};
-      const who = claims["x-hasura-user-id"]
-        ? `user #${claims["x-hasura-user-id"]}`
-        : payload.login ?? "";
-
-setOk(`Welcome${who ? ", " + who : ""}!`);
+      setOk("Welcome! Redirecting…");
 console.log("Login success, navigating to /profile");
-    navigate("/profile", { replace: true });
+    navigate("/profile");
     } catch (e) {
       setErr(e?.message || "Invalid credentials.");
     } finally {
