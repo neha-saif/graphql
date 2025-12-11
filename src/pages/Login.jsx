@@ -40,7 +40,8 @@ useEffect(() => {
         ? `user #${claims["x-hasura-user-id"]}`
         : payload.login ?? "";
 
-      setOk(`Welcome${who ? ", " + who : ""}! Redirecting…`);
+setOk(`Welcome${who ? ", " + who : ""}!`);
+console.log("Login success, navigating to /profile");
 navigate("/profile");
     } catch (e) {
       setErr(e?.message || "Invalid credentials.");

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { getToken, clearToken } from "../lib/auth.js";
+import { getToken, clearToken, signOut } from "../lib/auth.js";
 import { gqlFetch } from "../api.js";
 import ProfileSummary from "./ProfileSummary.jsx";
 
@@ -1256,7 +1256,7 @@ query GetUserData($uid: Int!) {
   );
 
 function logout() {
-      clearToken();
+      signOut();
   navigate("/login", { replace: true });
 
 }
