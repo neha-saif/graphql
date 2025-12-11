@@ -150,7 +150,9 @@ console.log("Login success, navigating to /profile");
           />
 
           <button
+          type="button"
             disabled={busy}
+                onClick={handleLogin}   
             style={{
               width: "100%",
               marginTop: 4,
