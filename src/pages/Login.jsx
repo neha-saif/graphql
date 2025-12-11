@@ -99,7 +99,7 @@ console.log("Login success, navigating to /profile");
         </p>
 
 <form
-  onSubmit={(e) => e.preventDefault()} // stop native submit
+  handleLogin={(e) => e.preventDefault()} // stop native submit
   noValidate
 >
             <label
