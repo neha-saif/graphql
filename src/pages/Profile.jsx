@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { getToken, clearToken, signOut } from "../lib/auth.js";
+import { getToken, clearToken, signOut, decodeJwtPayload } from "../lib/auth.js";
 import { gqlFetch } from "../api.js";
 import ProfileSummary from "./ProfileSummary.jsx";
 
@@ -20,24 +20,20 @@ import {
   Bar,
 } from "recharts";
 
-// 🌑 Unified Dark Neon Purple Palette
 export const COLOR_PALETTE = {
-  // purples
   purpleDarker: "#2e1065",
   purpleDark: "#4c1d95",
-  purple: "#a855f7",       // main neon
+  purple: "#a855f7",      
   purpleMid: "#7c3aed",
   purpleLight: "#c084fc",
   purpleSoft: "#e9d5ff",
 
-  // neutrals for dark UI
   bg: "#020617",
   cardBg: "#020617",
   cardBorder: "#1f2937",
   textMain: "#e5e7eb",
   textMuted: "#9ca3af",
 
-  // muted language colors (if you use them elsewhere)
   gray: "#64748b",
   grayLight: "#cbd5e1",
   grayDark: "#475569",
@@ -50,7 +46,6 @@ export const COLOR_PALETTE = {
   other: "#cbd5e1",
 };
 
-// Distinct but cohesive chart colors (purples / pink / indigo)
 const LINE_COLORS = [
   "#a855f7", // neon purple
   "#7c3aed", // indigo-purple
@@ -62,7 +57,7 @@ const LINE_COLORS = [
   "#e9d5ff", // pale lavender
 ];
 
-// language → color mapping (kept as-is but using palette)
+// language  color mapping 
 export function colorForLang(lang) {
   if (!lang) return COLOR_PALETTE.other;
   const key = lang.toLowerCase().trim();
@@ -144,7 +139,7 @@ function statusFromRow(row, threshold = PASS_THRESHOLD) {
   return Number(effective) >= threshold ? "Passed" : "Failed";
 }
 
-/* =============== Quests Section (Pie) =============== */
+/* Quests Section */
 
 function QuestsSection({ baseRows }) {
   const passed = useMemo(
@@ -227,7 +222,7 @@ function QuestsSection({ baseRows }) {
   );
 }
 
-/* ============ Projects Section (Line + List) ============ */
+/* Projects Section (Line + List) */
 
 function ProjectsSection({ baseRows }) {
   const passed = useMemo(
@@ -460,7 +455,7 @@ function ProjectsSection({ baseRows }) {
   );
 }
 
-/* ============ Skills Section (XP Line + List) ============ */
+/* Skills Section (XP Line + List) */
 
 function SkillsSection({ xpRows }) {
   const { byLangDay, dayAll } = useMemo(() => {
@@ -688,7 +683,7 @@ function SkillsSection({ xpRows }) {
   );
 }
 
-/* ============ Grade By Category (Bar) ============ */
+/* Grade By Category (Bar) */
 
 function GradeByCategoryChart({ data }) {
   if (!data || data.length === 0) {
@@ -776,7 +771,7 @@ function GradeByCategoryChart({ data }) {
   );
 }
 
-/* ============ Top Ten Grades (Bar) ============ */
+/* Top Ten Grades (Bar) */
 
 function TopTenGradesChart({ rows }) {
   const allLanguages = useMemo(() => {
@@ -946,7 +941,7 @@ function TopTenGradesChart({ rows }) {
   );
 }
 
-/* ============ Grades By Language (Pie) ============ */
+/* Grades By Language (Pie) */
 
 function GradesByLanguageChart({ data }) {
   return (
@@ -1027,7 +1022,7 @@ function detectLanguage(name) {
   return "other";
 }
 
-/* ====================== Page ====================== */
+/* Profile Page */
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -1038,8 +1033,8 @@ export default function Profile() {
 
   const [userId, setUserId] = useState(null);
   const [login, setLogin] = useState("(loading…)");
-  const [rows, setRows] = useState([]); // progress
-  const [xpRows, setXpRows] = useState([]); // transactions xp
+  const [rows, setRows] = useState([]); 
+  const [xpRows, setXpRows] = useState([]); 
   const [xpBase, setXpBase] = useState(0);
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(false);
@@ -1048,9 +1043,12 @@ export default function Profile() {
   const [lastName, setLastName] = useState("");
 
 useEffect(() => {
-  const token = getToken();
+  const token = getToken() 
+    if (!token) {
+    navigate("/login", { replace: true });
+    return;
+  }
   async function loadMe() {
-
       try {
         setErr("");
         const data = await gqlFetch(`

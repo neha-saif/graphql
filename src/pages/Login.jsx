@@ -12,7 +12,7 @@ export default function Login() {
   const navigate = useNavigate();
 useEffect(() => {
 
-  // add login-page class when login is mounted
+  // add login-page class
   document.body.classList.add("login-page");
 
   // remove it when leaving the page
