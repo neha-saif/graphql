@@ -82,7 +82,7 @@ export default function ProfileSummary({
           <strong style={{ color: purpleLight }}>User ID:</strong> {user.id}
         </div>
         <div>
-          <strong style={{ color: purpleLight }}>Level:</strong>{" "}
+          <strong style={{ color: purpleLight }}>Current Level:</strong>{" "}
           {level ?? "—"}
         </div>
         <div>
