@@ -37,7 +37,7 @@ async function handleLogin(e) {
 
     setOk("Welcome! Redirecting…");
     console.log("Login success, navigating to /profile");
-    navigate("/profile");
+navigate("/profile", { replace: true });
   } catch (e) {
     setErr(e?.message || "Invalid credentials.");
   } finally {
