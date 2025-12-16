@@ -1,7 +1,6 @@
 import { getToken } from "./lib/auth.js";
 
 let ENDPOINT = import.meta.env.VITE_GRAPHQL_ENDPOINT;
-console.log("PRODUCTION ENDPOINT:", ENDPOINT);
 
 // helper for graphql api calls, fetches and attaches token to the auth token if user is logged in
 export async function gqlFetch(query, variables = {}, extraHeaders = {}) {

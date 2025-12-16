@@ -9,7 +9,6 @@ export default function App() {
 
   return (
     <Routes>
-      {/* Root: send to profile if logged in, otherwise login */}
       <Route
         path="/"
         element={
@@ -21,19 +20,16 @@ export default function App() {
         }
       />
 
-      {/* Login: if already logged in, don't show login, go to profile */}
       <Route
         path="/login"
         element={hasToken ? <Navigate to="/profile" replace /> : <Login />}
       />
 
-      {/* Profile: if not logged in, send to login */}
       <Route
         path="/profile"
         element={hasToken ? <Profile /> : <Navigate to="/login" replace />}
       />
 
-      {/* Anything else: go through the same logic as "/" */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

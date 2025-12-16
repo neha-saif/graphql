@@ -1,6 +1,5 @@
 const TOKEN_KEY = "jwt"; // keep consistent with your existing storage key
 const AUTH_ENDPOINT = import.meta.env.VITE_AUTH_ENDPOINT;
-console.log("PRODUCTION AUTH ENDPOINT:", AUTH_ENDPOINT);
 
 // local storage helpers
 export function getToken() {

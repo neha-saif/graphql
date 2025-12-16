@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { getToken, clearToken, signOut, decodeJwtPayload } from "../lib/auth.js";
+import { getToken, clearToken } from "../lib/auth.js";
 import { gqlFetch } from "../api.js";
 import ProfileSummary from "./ProfileSummary.jsx";
 
@@ -93,9 +93,8 @@ function Chip({ active, children, onClick, title }) {
   );
 }
 
-// ui clean up rules to fix names from db
 const PASS_THRESHOLD = Number(import.meta.env.VITE_PASS_THRESHOLD ?? 1);
-
+// ui clean up rules to fix language names from db
 function prettyLang(s) {
   if (!s) return "Other";
   const v = String(s).toLowerCase();
@@ -110,6 +109,7 @@ function prettyLang(s) {
   return v.charAt(0).toUpperCase() + v.slice(1);
 }
 
+// ui clean up rules to fix xp sources type names from db
 function prettyKind(type) {
   if (!type) return "(unknown)";
   const t = String(type).toLowerCase();
@@ -119,7 +119,7 @@ function prettyKind(type) {
   if (t === "raid") return "Raid";
   return t.charAt(0).toUpperCase() + t.slice(1);
 }
-
+//before looking at type if lang is unknown label ti piscine (initial categorizing vs prettyKind which is what user sees)
 function computeCategoryFromRow(row) {
   const rawLang = row?.object?.attrs?.language || "";
   if (rawLang === "unknown") return "Piscine";
@@ -130,17 +130,19 @@ function computeCategoryFromRow(row) {
   return "Other";
 }
 
+// checks how many attempts and defines whether something is completed or not and if yes takes the highest grade as final grade 
 function statusFromRow(row, threshold = PASS_THRESHOLD) {
   const direct = row?.grade;
   const fromAttempts = row?.results_aggregate?.aggregate?.max?.grade;
   const effective = direct ?? fromAttempts;
   const done = !!row?.isDone;
+  // Pending = not done or no grade 
   if (!done || effective === null || effective === undefined) return "Pending";
+  //Passed/Failed = done & grade exists
   return Number(effective) >= threshold ? "Passed" : "Failed";
 }
 
-/* Quests Section */
-
+//Quests section
 function QuestsSection({ baseRows }) {
   const passed = useMemo(
     () => baseRows.filter((r) => r.__status === "Passed"),
@@ -222,7 +224,7 @@ function QuestsSection({ baseRows }) {
   );
 }
 
-/* Projects Section (Line + List) */
+// Projects Section 
 
 function ProjectsSection({ baseRows }) {
   const passed = useMemo(
@@ -455,7 +457,7 @@ function ProjectsSection({ baseRows }) {
   );
 }
 
-/* Skills Section (XP Line + List) */
+// Skills Section (XP Line)
 
 function SkillsSection({ xpRows }) {
   const { byLangDay, dayAll } = useMemo(() => {
@@ -683,7 +685,7 @@ function SkillsSection({ xpRows }) {
   );
 }
 
-/* Grade By Category (Bar) */
+// Grade By Category (Bar chat)
 
 function GradeByCategoryChart({ data }) {
   if (!data || data.length === 0) {
@@ -771,7 +773,7 @@ function GradeByCategoryChart({ data }) {
   );
 }
 
-/* Top Ten Grades (Bar) */
+// Top Ten Grades 
 
 function TopTenGradesChart({ rows }) {
   const allLanguages = useMemo(() => {
@@ -941,7 +943,7 @@ function TopTenGradesChart({ rows }) {
   );
 }
 
-/* Grades By Language (Pie) */
+// Grades By Language (Pie chart) 
 
 function GradesByLanguageChart({ data }) {
   return (
@@ -1002,27 +1004,7 @@ function GradesByLanguageChart({ data }) {
   );
 }
 
-function detectLanguage(name) {
-  if (!name) return "other";
-
-  const n = name.toLowerCase();
-
-  if (n.includes("go") || n.includes("lem") || n.includes("net-cat") || n.includes("forum"))
-    return "go";
-
-  if (n.includes("js") || n.includes("javascript")) return "javascript";
-
-  if (n.includes("sql") || n.includes("tell-me") || n.includes("group-price"))
-    return "sql";
-
-  if (n.includes("docker") || n.includes("ascii-art-web")) return "docker";
-
-  if (n.includes("sh") || n.includes("shell") || n.includes("bash")) return "shell";
-
-  return "other";
-}
-
-/* Profile Page */
+// Final profile Page put together with all charts and summary on top 
 
 export default function Profile() {
   const navigate = useNavigate();

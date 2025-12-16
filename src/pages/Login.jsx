@@ -36,7 +36,6 @@ async function handleLogin(e) {
     const token = await signIn(identity, password);
 
     setOk("Welcome! Redirecting…");
-    console.log("Login success, navigating to /profile");
 navigate("/profile", { replace: true });
   } catch (e) {
     setErr(e?.message || "Invalid credentials.");

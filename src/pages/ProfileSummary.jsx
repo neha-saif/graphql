@@ -12,7 +12,7 @@ export default function ProfileSummary({
 }) {
   if (!user) return null;
 
-  const XP_PER_LEVEL = Number(import.meta.env.VITE_XP_PER_LEVEL ?? 40000);
+  // const XP_PER_LEVEL = Number(import.meta.env.VITE_XP_PER_LEVEL ?? 40000);
 
   const levelPctOf50 = Math.min(100, Math.round((level / 50) * 100));
   const auditRatioNum = Number(auditRatio || 0);
