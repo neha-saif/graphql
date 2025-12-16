@@ -1,10 +1,11 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Login from "./pages/Login.jsx";
 import Profile from "./pages/Profile.jsx";
 import { getToken } from "./lib/auth.js";
 
 export default function App() {
-  const hasToken = !!getToken(); // check localStorage on each render
+  useLocation(); // re renders the app if route changes
+  const hasToken = !!getToken(); // check token on each render
 
   return (
     <Routes>

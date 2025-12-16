@@ -34,7 +34,6 @@ async function handleLogin(e) {
   setBusy(true);
   try {
     const token = await signIn(identity, password);
-    saveToken(token);
 
     setOk("Welcome! Redirecting…");
     console.log("Login success, navigating to /profile");
