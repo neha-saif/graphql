@@ -86,7 +86,7 @@ export default function ProfileSummary({
           {level ?? "—"}
         </div>
         <div>
-          <strong style={{ color: purpleLight }}>Completion (to level 50):</strong>{" "}
+          <strong style={{ color: purpleLight }}>Completion (Level 50):</strong>{" "}
           {levelPctOf50}%
         </div>
         <div>
