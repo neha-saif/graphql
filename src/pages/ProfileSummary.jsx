@@ -104,6 +104,7 @@ export default function ProfileSummary({
             {auditRatio1}
           </span>
         </div>
+        
         <div>
           <strong style={{ color: purpleLight }}>XP Up:</strong>{" "}
           {xpUp?.toLocaleString() || 0}
@@ -113,7 +114,6 @@ export default function ProfileSummary({
           {xpDown?.toLocaleString() || 0}
         </div>
       </div>
-
       <div
         style={{
           background: "#111827",
