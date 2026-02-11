@@ -143,10 +143,8 @@ query GetUserData($uid: Int!) {
     order_by: { eventId: desc }
     limit: 1
   ) {
-	level: transaction(limit: 1, order_by: { createdAt: desc }, where: { type: { _eq: "level" } }) {
-			amount
-		}
-  }    eventId
+    level
+    eventId
   }
 
   progress(
