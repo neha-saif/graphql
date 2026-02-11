@@ -1069,24 +1069,25 @@ useEffect(() => {
     loadMe();
   }, []);
 
-  useEffect(() => {
-    if (userId == null) return;
+useEffect(() => {
+  if (userId == null) return;
 
-    async function loadAll() {
-      const token = getToken();
-      if (!token) return;
+  async function loadAll() {
+    const token = getToken();
+    if (!token) return;
 
-      setLoading(true);
-      setErr("");
+    setLoading(true);
+    setErr("");
 
-      const query = `
+    const query = `
 query GetUserData($uid: Int!) {
   event_user(
     where: { userId: { _eq: $uid }, level: { _gt: 0 } }
-    order_by: { level: desc }
+    order_by: { eventId: desc }
     limit: 1
   ) {
     level
+    eventId
   }
 
   progress(
@@ -1113,34 +1114,34 @@ query GetUserData($uid: Int!) {
   }
 }
 `;
+    try {
+      const data = await gqlFetch(query, { uid: userId });
 
-      try {
-        const data = await gqlFetch(query, { uid: userId });
-        setLevel(data?.event_user?.[0]?.level ?? null);
+      setLevel(data?.event_user?.[0]?.level ?? null);
 
-        const prog = data.progress || [];
-        setRows(prog);
+      const prog = data?.progress || [];
+      setRows(prog);
 
-        const tx = data.transaction || [];
-        setXpRows(
-          tx.map((t) => ({
-            amount: Number(t.amount),
-            createdAt: t.createdAt,
-            langPretty: prettyLang(t?.object?.attrs?.language),
-            object: t.object,
-          }))
-        );
-      } catch (e) {
-        setRows([]);
-        setXpRows([]);
-        setErr(e?.message || "Failed to load data.");
-      } finally {
-        setLoading(false);
-      }
+      const tx = data?.transaction || [];
+      setXpRows(
+        tx.map((t) => ({
+          amount: Number(t.amount),
+          createdAt: t.createdAt,
+          langPretty: prettyLang(t?.object?.attrs?.language),
+          object: t.object,
+        }))
+      );
+    } catch (e) {
+      setRows([]);
+      setXpRows([]);
+      setErr(e?.message || "Failed to load data.");
+    } finally {
+      setLoading(false);
     }
+  }
 
-    loadAll();
-  }, [userId]);
+  loadAll();
+}, [userId]);
 
   const normalized = useMemo(() => {
     return rows.map((r) => {
