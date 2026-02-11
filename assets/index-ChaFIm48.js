@@ -160,7 +160,7 @@ query GetUserData($uid: Int!) {
     results_aggregate { aggregate { max { grade } } }
   }
 
-  transaction(
+  transaction_xp: transaction(
     where: { userId: { _eq: $uid }, type: { _eq: "xp" } }
     order_by: { createdAt: asc }
     limit: 5000
