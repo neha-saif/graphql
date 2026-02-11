@@ -1083,13 +1083,11 @@ useEffect(() => {
 query GetUserData($uid: Int!) {
   event_user(
     where: { userId: { _eq: $uid }, level: { _gt: 0 } }
-    order_by: { eventId: desc }
+    order_by: { createdAt: desc }
     limit: 1
   ) {
-	level: transaction(limit: 1, order_by: { createdAt: desc }, where: { type: { _eq: "level" } }) {
-			amount
-		}
-  }    eventId
+    level
+    eventId
   }
 
   progress(
@@ -1116,6 +1114,7 @@ query GetUserData($uid: Int!) {
   }
 }
 `;
+
     try {
       const data = await gqlFetch(query, { uid: userId });
 
