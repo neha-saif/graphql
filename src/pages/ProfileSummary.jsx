@@ -14,7 +14,6 @@ export default function ProfileSummary({
 
   // const XP_PER_LEVEL = Number(import.meta.env.VITE_XP_PER_LEVEL ?? 40000);
 
-  const levelPctOf50 = Math.min(100, Math.round((level / 50) * 100));
   const auditRatioNum = Number(auditRatio || 0);
   const auditRatio1 = auditRatioNum.toFixed(1);
   const totalGrade1 = Number(totalGrade).toFixed(1);
@@ -86,10 +85,6 @@ export default function ProfileSummary({
           {level ?? "—"}
         </div>
         <div>
-          <strong style={{ color: purpleLight }}>Completion (Lvl 50):</strong>{" "}
-          {levelPctOf50}%
-        </div>
-        <div>
           <strong style={{ color: purpleLight }}>Total Grade:</strong>{" "}
           {totalGrade1}
         </div>
@@ -122,16 +117,7 @@ export default function ProfileSummary({
           marginTop: "1.6rem",
           overflow: "hidden",
         }}
-      >
-        <div
-          style={{
-            width: `${levelPctOf50}%`,
-            height: "100%",
-            background:
-              "linear-gradient(90deg, rgba(168,85,247,1), rgba(129,140,248,1))",
-            transition: "width 0.4s ease",
-          }}
-        />
+      >        
       </div>
     </section>
   );

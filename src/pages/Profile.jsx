@@ -1081,13 +1081,13 @@ useEffect(() => {
 
     const query = `
 query GetUserData($uid: Int!) {
-  event_user(
-    where: { userId: { _eq: $uid }, level: { _gt: 0 } }
-    order_by: { createdAt: desc }
+  transaction(
     limit: 1
+    order_by: { createdAt: desc }
+    where: { userId: { _eq: $uid }, type: { _eq: "level" } }
   ) {
-    level
-    eventId
+    amount
+    createdAt
   }
 
   progress(
@@ -1103,7 +1103,7 @@ query GetUserData($uid: Int!) {
     results_aggregate { aggregate { max { grade } } }
   }
 
-  transaction(
+  transaction_xp: transaction(
     where: { userId: { _eq: $uid }, type: { _eq: "xp" } }
     order_by: { createdAt: asc }
     limit: 5000
@@ -1114,31 +1114,30 @@ query GetUserData($uid: Int!) {
   }
 }
 `;
+try {
+  const data = await gqlFetch(query, { uid: userId });
 
-    try {
-      const data = await gqlFetch(query, { uid: userId });
+  setLevel(data?.transaction?.[0]?.amount ?? null);
 
-      setLevel(data?.event_user?.[0]?.level ?? null);
+  const prog = data?.progress || [];
+  setRows(prog);
 
-      const prog = data?.progress || [];
-      setRows(prog);
-
-      const tx = data?.transaction || [];
-      setXpRows(
-        tx.map((t) => ({
-          amount: Number(t.amount),
-          createdAt: t.createdAt,
-          langPretty: prettyLang(t?.object?.attrs?.language),
-          object: t.object,
-        }))
-      );
-    } catch (e) {
-      setRows([]);
-      setXpRows([]);
-      setErr(e?.message || "Failed to load data.");
-    } finally {
-      setLoading(false);
-    }
+  const tx = data?.transaction_xp || [];
+  setXpRows(
+    tx.map((t) => ({
+      amount: Number(t.amount),
+      createdAt: t.createdAt,
+      langPretty: prettyLang(t?.object?.attrs?.language),
+      object: t.object,
+    }))
+  );
+} catch (e) {
+  setRows([]);
+  setXpRows([]);
+  setErr(e?.message || "Failed to load data.");
+} finally {
+  setLoading(false);
+} 
   }
 
   loadAll();
