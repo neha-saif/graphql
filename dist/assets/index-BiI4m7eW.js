@@ -140,7 +140,7 @@ Please change the parent <Route path="${_}"> to <Route path="${_==="/"?"*":`${_}
 query GetUserData($uid: Int!) {
   event_user(
     where: { userId: { _eq: $uid }, level: { _gt: 0 } }
-    order_by: { eventId: desc }
+    order_by: { createdAt: desc }
     limit: 1
   ) {
     level
